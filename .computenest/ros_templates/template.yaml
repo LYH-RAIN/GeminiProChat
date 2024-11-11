@@ -190,11 +190,11 @@ Parameters:
           Fn::Equals:
             - ExistingVPC
             - ${VpcOption}
+
   GEMINI_API_KEY:
     Type: String
-    AssociationProperty: ALIYUN::ECS::Instance::Password
-    Label: 密码
-    NoEcho: True
+    Label: API_KEY
+
 Resources:
   # 新建vpc
   EcsVpc:
@@ -229,7 +229,7 @@ Resources:
           - Ref: EcsVpc
           - Ref: VpcId
       SecurityGroupIngress:
-        - PortRange: $PORT/$PORT
+        - PortRange: 3000/3000
           Priority: 1
           SourceCidrIp: 0.0.0.0/0
           IpProtocol: tcp
@@ -289,7 +289,7 @@ Resources:
         host=$(echo $host | tr -d '"')
         docker login $host --username=$username --password=$password
         docker pull '{{ computenest::acrimage::LYH-RAIN_GeminiProChat-dockerfile }}'
-        docker run -d -p $PORT:$PORT -e GEMINI_API_KEY=${GEMINI_API_KEY} '{{ computenest::acrimage::LYH-RAIN_GeminiProChat-dockerfile }}'
+        docker run -d -p 3000:3000 -e GEMINI_API_KEY=${GEMINI_API_KEY} '{{ computenest::acrimage::LYH-RAIN_GeminiProChat-dockerfile }}'
 
 Outputs:
   
@@ -299,7 +299,7 @@ Outputs:
       zh-cn: 访问页面1
     Value:
       Fn::Sub:
-        - http://${ServerAddress}:$PORT
+        - http://${ServerAddress}:3000
         - ServerAddress:
             Fn::Select:
               - 0
